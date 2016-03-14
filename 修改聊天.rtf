@@ -1,0 +1,427 @@
+{\rtf1\ansi\ansicpg936\cocoartf1404\cocoasubrtf340
+{\fonttbl\f0\fnil\fcharset0 Menlo-Regular;\f1\fnil\fcharset134 PingFangSC-Regular;}
+{\colortbl;\red255\green255\blue255;\red170\green13\blue145;\red92\green38\blue153;\red46\green13\blue110;
+\red63\green110\blue116;\red100\green56\blue32;\red28\green0\blue207;\red38\green71\blue75;\red0\green116\blue0;
+\red196\green26\blue22;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\deftab529
+\pard\tx529\pardeftab529\pardirnatural\partightenfactor0
+
+\f0\fs22 \cf0 \CocoaLigature0 -(\cf2 void\cf0 ) loadImage\
+\{\
+    \
+   \cf3 UIImage\cf0  *image = [\cf3 UIImage\cf0  \cf4 imageWithContentsOfFile\cf0 :[[\cf4 NSSearchPathForDirectoriesInDomains\cf0 (\cf4 NSDocumentDirectory\cf0 , \cf4 NSUserDomainMask\cf0 , \cf2 YES\cf0 ) \cf4 lastObject\cf0 ] \cf4 stringByAppendingPathComponent\cf0 :\cf2 self\cf0 .\cf5 jqid\cf0 ]];\
+    \cf2 if\cf0  (image) \{\
+        [\cf2 self\cf0  \cf4 performSelectorOnMainThread\cf0 :\cf2 @selector\cf0 (setImage:) \cf4 withObject\cf0 :image \cf4 waitUntilDone\cf0 :\cf2 YES\cf0 ];\
+    \}\cf2 else\cf0 \
+    \{\
+   \
+        \cf2 if\cf0  (\cf5 _loadImage\cf0 ) \{\
+            \cf4 dispatch_after\cf0 (\cf4 dispatch_time\cf0 (\cf6 DISPATCH_TIME_NOW\cf0 , (\cf3 int64_t\cf0 )(\cf7 0.4\cf0  * \cf6 NSEC_PER_SEC\cf0 )), \cf4 dispatch_get_main_queue\cf0 (), ^\{\
+                [\cf2 self\cf0  \cf8 loadImage\cf0 ];\
+                \cf5 _loadImage\cf0 =\cf2 NO\cf0 ;\
+                \
+            \});\
+        \}\
+  \
+    \}\
+  \
+\}\
+\
+\
+-(\cf2 void\cf0 )sendBtn:(\cf3 UIButton\cf0  *)sender\
+\{\
+    \cf9 //
+\f1 \'c8\'c3\'bc\'fc\'c5\'cc\'cf\'fb\'ca\'a7
+\f0 \cf0 \
+    [\cf2 self\cf0 .\cf5 contentText\cf0  \cf4 resignFirstResponder\cf0 ];\
+    \
+    \
+        \
+        \cf2 if\cf0  (![\cf2 self\cf0 .\cf5 contentText\cf0 .\cf3 text\cf0  \cf4 isEqualToString\cf0 :\cf10 @""\cf0 ])\
+        \{\
+            \
+           \
+            \
+            \
+            \cf3 NSDictionary\cf0  *locationDict= [\cf3 NSKeyedUnarchiver\cf0  \cf4 unarchiveObjectWithFile\cf0 :\cf6 LOCATION\cf0 ];\
+            \cf3 CLLocation\cf0  *messageLocation=[[\cf3 CLLocation\cf0  \cf4 alloc\cf0 ] \cf4 initWithLatitude\cf0 :[[locationDict \cf4 objectForKey\cf0 :\cf10 @"latitude"\cf0 ]\cf4 doubleValue\cf0 ]  \cf4 longitude\cf0 :[[locationDict \cf4 objectForKey\cf0 :\cf10 @"longitude"\cf0 ]\cf4 doubleValue\cf0 ]];\
+            \cf4 NSLog\cf0 (\cf10 @"messageLocation%@"\cf0 ,messageLocation);\
+            \cf2 int\cf0  index=-\cf7 1\cf0 ;\
+            index= [\cf2 self\cf0  \cf8 pointListArrayWithMessage\cf0 :messageLocation];\
+            \cf4 NSLog\cf0 (\cf10 @"index%ld"\cf0 ,(\cf2 long\cf0 )index);\
+            \
+            \cf2 if\cf0  (index<\cf7 0\cf0 ) \{\
+                \
+                [\cf2 self\cf0  \cf8 showMBprogressHuDWithTitles\cf0 :\cf10 @"
+\f1 \'b1\'f0\'c4\'d6\'a3\'a1\'c4\'fa\'b2\'bb\'d4\'da\'b5\'b1\'c7\'b0\'be\'b0\'c7\'f8
+\f0 "\cf0  \cf8 withView\cf0 :\cf2 self\cf0 .\cf3 view\cf0 ];\
+            \}\cf2 else\cf0 \{\
+            \
+            \cf5 EMChatText\cf0  *txtChat = [[\cf5 EMChatText\cf0  \cf4 alloc\cf0 ] \cf8 initWithText\cf0 :\cf2 self\cf0 .\cf5 contentText\cf0 .\cf3 text\cf0 ];\
+            \cf5 EMTextMessageBody\cf0  *body = [[\cf5 EMTextMessageBody\cf0  \cf4 alloc\cf0 ] \cf8 initWithChatObject\cf0 :txtChat];\
+            \
+            \cf9 // 
+\f1 \'c9\'fa\'b3\'c9
+\f0 message\cf0 \
+            \cf5 EMMessage\cf0  *message = [[\cf5 EMMessage\cf0  \cf4 alloc\cf0 ] \cf8 initWithReceiver\cf0 :\cf2 self\cf0 .\cf5 groupid\cf0  \cf8 bodies\cf0 :\cf7 @[\cf0 body\cf7 ]\cf0 ];\
+            \
+            \
+            \cf9 //
+\f1 \'b8\'f6\'c8\'cb\'d0\'c5\'cf\'a2
+\f0 \cf0 \
+            \
+            \
+            \
+            \cf3 NSString\cf0  *time=[\cf3 NSString\cf0  \cf4 stringWithFormat\cf0 :\cf10 @"%lld"\cf0 ,message.\cf5 timestamp\cf0 ];\
+            \cf9 //
+\f1 \'b8\'f6\'c8\'cb\'d0\'c5\'cf\'a2
+\f0 \cf0 \
+            \cf5 personMessage\cf0  *personModel=[\cf3 NSKeyedUnarchiver\cf0  \cf4 unarchiveObjectWithFile\cf0 :\cf6 personMessagePath\cf0 ];\
+            \
+            \cf9 //
+\f1 \'c5\'d0\'b6\'cf\'ca\'c7\'b7\'f1\'b5\'c7\'c2\'bc
+\f0 \cf0 \
+            \cf2 if\cf0  ([[[\cf3 NSUserDefaults\cf0  \cf4 standardUserDefaults\cf0 ]\cf4 objectForKey\cf0 :\cf10 @"loginState"\cf0 ]\cf4 isEqualToString\cf0 :\cf10 @"yes"\cf0 ]) \{\
+                \
+                \
+                message.\cf5 ext\cf0 =\cf7 @\{\cf10 @"sendTime"\cf0 :time,\cf10 @"latitude"\cf0 :[locationDict \cf4 objectForKey\cf0 :\cf10 @"latitude"\cf0 ],\cf10 @"longitude"\cf0 :[locationDict \cf4 objectForKey\cf0 :\cf10 @"longitude"\cf0 ],\cf10 @"userName"\cf0 :personModel.\cf5 nickName\cf0 ,\cf10 @"userPhoto"\cf0 :personModel.\cf5 imgUrl\cf7 \}\cf0 ;\
+            \}\cf2 else\cf0 \{\
+                message.\cf5 ext\cf0 =\cf7 @\{\cf10 @"sendTime"\cf0 :time,\cf10 @"latitude"\cf0 :[locationDict \cf4 objectForKey\cf0 :\cf10 @"latitude"\cf0 ],\cf10 @"longitude"\cf0 :[locationDict \cf4 objectForKey\cf0 :\cf10 @"longitude"\cf0 ]\cf7 \}\cf0 ;\
+                \
+                \
+            \}\
+\
+            message.\cf5 messageType\cf0  = \cf8 eConversationTypeGroupChat\cf0 ; \cf9 // 
+\f1 \'c9\'e8\'d6\'c3\'ce\'aa\'b5\'a5\'c1\'c4\'cf\'fb\'cf\'a2
+\f0 \cf0 \
+            \cf9 //message.messageType = eConversationTypeGroupChat;// 
+\f1 \'c9\'e8\'d6\'c3\'ce\'aa\'c8\'ba\'c1\'c4\'cf\'fb\'cf\'a2
+\f0 \cf0 \
+            \cf9 //message.messageType = eConversationTypeChatRoom;// 
+\f1 \'c9\'e8\'d6\'c3\'ce\'aa\'c1\'c4\'cc\'ec\'ca\'d2\'cf\'fb\'cf\'a2
+\f0 \cf0 \
+            \
+            \cf9 //[[EaseMob sharedInstance].chatManager sendMessage:message progress:nil error:nil];\cf0 \
+            [[\cf5 EaseMob\cf0  \cf8 sharedInstance\cf0 ].\cf5 chatManager\cf0 \
+             \cf8 asyncSendMessage\cf0 :(\cf5 EMMessage\cf0  *)message\
+             \cf8 progress\cf0 :\cf2 nil\cf0 ];\
+            \cf9 //self.view.frame=CGRectMake(0, 64, self.view.frame.size.width, self.view.frame.size.height);\cf0 \
+            \
+            \
+            \
+            \
+            \cf3 NSString\cf0  * timeStampString = [\cf3 NSString\cf0  \cf4 stringWithFormat\cf0 :\cf10 @"%lld"\cf0 ,message.\cf5 timestamp\cf0 ];\
+            \cf3 NSTimeInterval\cf0  _interval=[[timeStampString \cf4 substringToIndex\cf0 :\cf7 10\cf0 ] \cf4 doubleValue\cf0  ];\
+            \cf3 NSDate\cf0  *date = [\cf3 NSDate\cf0  \cf4 dateWithTimeIntervalSince1970\cf0 :_interval];\
+            \cf4 NSLog\cf0 (\cf10 @"date2 %@"\cf0 , date);\
+            \
+            \cf3 NSDateFormatter\cf0  * df = [[\cf3 NSDateFormatter\cf0  \cf4 alloc\cf0 ] \cf4 init\cf0 ];\
+            [df \cf4 setDateFormat\cf0 :\cf10 @"HH:mm"\cf0 ];\
+            \cf3 NSString\cf0  * dateString = [df \cf4 stringFromDate\cf0 :date];\
+            [\cf5 _messageDict\cf0  \cf4 setValue\cf0 :\cf10 @"me"\cf0  \cf4 forKey\cf0 :\cf10 @"name"\cf0 ];\
+            [\cf5 _messageDict\cf0  \cf4 setValue\cf0 :dateString \cf4 forKey\cf0 :\cf10 @"time"\cf0 ];\
+            \
+            [\cf5 _messageDict\cf0  \cf4 setValue\cf0 :\cf2 self\cf0 .\cf5 contentText\cf0 .\cf3 text\cf0  \cf4 forKey\cf0 :\cf10 @"content"\cf0 ];\
+            [\cf5 _messageDict\cf0  \cf4 setValue\cf0 :\cf10 @"text"\cf0  \cf4 forKey\cf0 :\cf10 @"type"\cf0 ];\
+            \
+            \
+            \cf9 //
+\f1 \'cd\'b7\'cf\'f1
+\f0 \cf0 \
+            [\cf5 _messageDict\cf0  \cf4 setValue\cf0 :personModel.\cf5 nickName\cf0  \cf4 forKey\cf0 :\cf10 @"userName"\cf0 ];\
+            [\cf5 _messageDict\cf0  \cf4 setValue\cf0 :personModel.\cf5 imgUrl\cf0  \cf4 forKey\cf0 :\cf10 @"userPhoto"\cf0 ];\
+            \
+           \
+            \
+                \cf2 if\cf0  (\cf5 _pointListArray\cf0 .\cf3 count\cf0 >\cf7 0\cf0 ) \{\
+                    \cf5 PointListModel\cf0  *pointModel=\cf5 _pointListArray\cf0 [index];\
+                    \cf4 NSLog\cf0 (\cf10 @"____boxX%@  Y%@"\cf0 ,pointModel.\cf5 map_X\cf0 ,pointModel.\cf5 map_Y\cf0 );\
+                    [\cf5 _messageDict\cf0  \cf4 setObject\cf0 :pointModel.\cf5 map_Y\cf0  \cf4 forKey\cf0 :\cf10 @"mapy"\cf0 ];\
+                    [\cf5 _messageDict\cf0  \cf4 setObject\cf0 :pointModel.\cf5 map_X\cf0  \cf4 forKey\cf0 :\cf10 @"mapx"\cf0 ];\
+                \}\
+                \
+                \
+                \
+                \cf9 // NSLog(@"%@",_messageDict);\cf0 \
+                \cf5 MessageModel\cf0  *messageModel=[[\cf5 MessageModel\cf0  \cf4 alloc\cf0 ]\cf8 initWithDict\cf0 :\cf5 _messageDict\cf0 ];\
+                \cf4 NSLog\cf0 (\cf10 @"----%@"\cf0 ,messageModel.\cf5 name\cf0 );\
+                \cf9 // [_usrMessageArray addObject:messageModel];\cf0 \
+                \
+                \
+                \cf3 NSMutableArray\cf0  *muarry = [\cf3 NSMutableArray\cf0  \cf4 arrayWithArray\cf0 :\cf5 _array\cf0 ];\
+                \cf9 //    NSMutableArray *useArray=[[NSMutableArray alloc]init];\cf0 \
+                \
+                \
+                \
+                \
+                \cf2 int\cf0  nowtotal= muarry.\cf3 count\cf0 ;\
+                \cf2 if\cf0  (nowtotal>\cf7 0\cf0 ) \{\
+                    \cf2 BOOL\cf0  isHas=\cf2 NO\cf0 ;\
+                    \cf2 for\cf0 (\cf2 int\cf0  j=\cf7 0\cf0 ;j<muarry.\cf3 count\cf0 ;j++)\
+                    \{\
+                        \cf3 NSMutableArray\cf0  *messageArray2=muarry[j];\
+                        \cf5 MessageModel\cf0  *messageModel2=messageArray2[\cf7 0\cf0 ];\
+                        \cf4 NSLog\cf0 (\cf10 @"1%@"\cf0 ,messageModel.\cf5 name\cf0 );\
+                        \cf4 NSLog\cf0 (\cf10 @"2%@"\cf0 ,messageModel2.\cf5 name\cf0 );\
+                        \cf2 if\cf0  ([messageModel2.\cf5 name\cf0  \cf4 isEqualToString\cf0 :messageModel.\cf5 name\cf0 ]) \{\
+                            [messageArray2 \cf4 addObject\cf0 :messageModel];\
+                            [muarry \cf4 removeObjectAtIndex\cf0 :j];\
+                            [muarry \cf4 addObject\cf0 :messageArray2];\
+                            \cf9 //[muarry addObject:messageArray2];\cf0 \
+                            isHas=\cf2 YES\cf0 ;\
+                            \cf2 break\cf0 ;\
+                        \}\cf2 else\cf0 \
+                        \{\
+                            \cf9 //                        NSMutableArray *usrMessage=[[NSMutableArray alloc]init];\cf0 \
+                            \cf9 //                     [usrMessage addObject:messageModel];\cf0 \
+                            \cf9 //                        [muarry addObject:usrMessage];\cf0 \
+                            \cf9 //                        break;\cf0 \
+                        \}\
+                    \}\
+                    \
+                    \
+                    \
+                    \cf2 if\cf0  (isHas==\cf2 NO\cf0 )\
+                    \{\
+                        \cf3 NSMutableArray\cf0  *usrMessage=[[\cf3 NSMutableArray\cf0  \cf4 alloc\cf0 ]\cf4 init\cf0 ];\
+                        [usrMessage \cf4 addObject\cf0 :messageModel];\
+                        [muarry \cf4 addObject\cf0 :usrMessage];\
+                    \}\
+                    \
+                \}\
+                \cf2 else\cf0 \
+                \{\
+                    \cf3 NSMutableArray\cf0  *usrMessage=[[\cf3 NSMutableArray\cf0  \cf4 alloc\cf0 ]\cf4 init\cf0 ];\
+                    [usrMessage \cf4 addObject\cf0 :messageModel];\
+                    [muarry \cf4 addObject\cf0 :usrMessage];\
+                \}\
+                \
+                \
+                \
+                \cf5 _array\cf0 =muarry;\
+                \
+                \
+                \cf5 _mapView\cf0 .\cf5 messageArray\cf0 =[\cf5 _array\cf0  \cf4 mutableCopy\cf0 ];\
+                \
+                \cf5 MBProgressHUD\cf0  *HUD = [\cf5 MBProgressHUD\cf0  \cf8 showHUDAddedTo\cf0 :\cf2 self\cf0 .\cf3 view\cf0  \cf8 animated\cf0 :\cf2 YES\cf0 ];\
+                HUD.\cf5 labelFont\cf0 =[\cf3 UIFont\cf0  \cf4 systemFontOfSize\cf0 :\cf7 15\cf0 ];\
+                HUD.\cf5 mode\cf0  = \cf8 MBProgressHUDModeText\cf0 ;\
+                HUD.\cf5 labelText\cf0  = \cf10 @"
+\f1 \'b7\'a2\'cb\'cd\'b3\'c9\'b9\'a6
+\f0 "\cf0 ;\
+                \
+                HUD.\cf5 removeFromSuperViewOnHide\cf0  = \cf2 YES\cf0 ;\
+                [HUD \cf8 hide\cf0 :\cf2 YES\cf0  \cf8 afterDelay\cf0 :\cf7 2\cf0 ];\
+                \
+                \
+            \}\
+            \cf2 self\cf0 .\cf5 contentText\cf0 .\cf3 text\cf0 =\cf10 @""\cf0 ;\
+        \
+        \}\cf2 else\cf0 \{\
+            \
+            \cf5 MBProgressHUD\cf0  *HUD = [\cf5 MBProgressHUD\cf0  \cf8 showHUDAddedTo\cf0 :\cf2 self\cf0 .\cf3 view\cf0  \cf8 animated\cf0 :\cf2 YES\cf0 ];\
+            HUD.\cf5 labelFont\cf0 =[\cf3 UIFont\cf0  \cf4 systemFontOfSize\cf0 :\cf7 15\cf0 ];\
+            HUD.\cf5 mode\cf0  = \cf8 MBProgressHUDModeText\cf0 ;\
+            HUD.\cf5 labelText\cf0  = \cf10 @"
+\f1 \'c7\'eb\'ca\'e4\'c8\'eb\'c4\'da\'c8\'dd
+\f0 "\cf0 ;\
+            \
+            HUD.\cf5 removeFromSuperViewOnHide\cf0  = \cf2 YES\cf0 ;\
+            [HUD \cf8 hide\cf0 :\cf2 YES\cf0  \cf8 afterDelay\cf0 :\cf7 2\cf0 ];\
+        \}\
+    \
+    \
+    \
+\}\
+\
+-(\cf2 void\cf0 )sendAudio:(\cf3 UIButton\cf0  *)sender\
+\{\
+    \cf4 NSLog\cf0 (\cf10 @"
+\f1 \'cd\'ea\'b3\'c9\'c2\'bc\'d2\'f4
+\f0 "\cf0 );\
+    \cf5 _recordView\cf0 .\cf3 hidden\cf0 =\cf2 YES\cf0 ;\
+    [\cf5 _timer\cf0  \cf4 invalidate\cf0 ];\
+    \
+    \
+     \cf3 NSDictionary\cf0  *locationDict= [\cf3 NSKeyedUnarchiver\cf0  \cf4 unarchiveObjectWithFile\cf0 :\cf6 LOCATION\cf0 ];\
+    \cf3 CLLocation\cf0  *messageLocation=[[\cf3 CLLocation\cf0  \cf4 alloc\cf0 ] \cf4 initWithLatitude\cf0 :[[locationDict \cf4 objectForKey\cf0 :\cf10 @"latitude"\cf0 ]\cf4 doubleValue\cf0 ]  \cf4 longitude\cf0 :[[locationDict \cf4 objectForKey\cf0 :\cf10 @"longitude"\cf0 ]\cf4 doubleValue\cf0 ]];\
+    \cf4 NSLog\cf0 (\cf10 @"messageLocation%@"\cf0 ,messageLocation);\
+    \cf2 int\cf0  index=-\cf7 1\cf0 ;\
+    index= [\cf2 self\cf0  \cf8 pointListArrayWithMessage\cf0 :messageLocation];\
+    \cf4 NSLog\cf0 (\cf10 @"index%ld"\cf0 ,(\cf2 long\cf0 )index);\
+    \
+    \cf2 if\cf0  (index<\cf7 0\cf0 ) \{\
+        [\cf2 self\cf0  \cf8 showMBprogressHuDWithTitles\cf0 :\cf10 @"
+\f1 \'b1\'f0\'c4\'d6\'a3\'a1\'c4\'fa\'b2\'bb\'d4\'da\'b5\'b1\'c7\'b0\'be\'b0\'c7\'f8
+\f0 "\cf0  \cf8 withView\cf0 :\cf2 self\cf0 .\cf3 view\cf0 ];\
+    \}\cf2 else\cf0 \{\
+    \
+    \cf9 //[_backView sendSubviewToBack:_recordView];\cf0 \
+    [[\cf5 EMCDDeviceManager\cf0  \cf8 sharedInstance\cf0 ] \cf8 asyncStopRecordingWithCompletion\cf0 :^(\cf3 NSString\cf0  *recordPath, \cf3 NSInteger\cf0  aDuration, \cf3 NSError\cf0  *error) \{\
+        \cf2 if\cf0  (!error) \{\
+            \cf5 EMChatVoice\cf0  *voice = [[\cf5 EMChatVoice\cf0  \cf4 alloc\cf0 ] \cf8 initWithFile\cf0 :recordPath\
+                                                       \cf8 displayName\cf0 :\cf10 @"audio"\cf0 ];\
+            voice.\cf5 duration\cf0  = aDuration;\
+            \cf5 EMVoiceMessageBody\cf0  *body = [[\cf5 EMVoiceMessageBody\cf0  \cf4 alloc\cf0 ] \cf8 initWithChatObject\cf0 :voice];\
+            \
+            \cf9 // 
+\f1 \'c9\'fa\'b3\'c9
+\f0 message\cf0 \
+            \cf5 EMMessage\cf0  *message = [[\cf5 EMMessage\cf0  \cf4 alloc\cf0 ] \cf8 initWithReceiver\cf0 :\cf2 self\cf0 .\cf5 groupid\cf0  \cf8 bodies\cf0 :\cf7 @[\cf0 body\cf7 ]\cf0 ];\
+            \cf3 NSString\cf0  *time=[\cf3 NSString\cf0  \cf4 stringWithFormat\cf0 :\cf10 @"%lld"\cf0 ,message.\cf5 timestamp\cf0 ];\
+           \
+            \cf9 //
+\f1 \'c5\'d0\'b6\'cf\'ca\'c7\'b7\'f1\'b5\'c7\'c2\'bc
+\f0 \cf0 \
+            \cf2 if\cf0  ([[[\cf3 NSUserDefaults\cf0  \cf4 standardUserDefaults\cf0 ]\cf4 objectForKey\cf0 :\cf10 @"loginState"\cf0 ]\cf4 isEqualToString\cf0 :\cf10 @"yes"\cf0 ]) \{\
+                \cf9 //
+\f1 \'b8\'f6\'c8\'cb\'d0\'c5\'cf\'a2
+\f0 \cf0 \
+                \cf5 personMessage\cf0  *personModel=[\cf3 NSKeyedUnarchiver\cf0  \cf4 unarchiveObjectWithFile\cf0 :\cf6 personMessagePath\cf0 ];\
+                \
+                message.\cf5 ext\cf0 =\cf7 @\{\cf10 @"sendTime"\cf0 :time,\cf10 @"latitude"\cf0 :[locationDict \cf4 objectForKey\cf0 :\cf10 @"latitude"\cf0 ],\cf10 @"longitude"\cf0 :[locationDict \cf4 objectForKey\cf0 :\cf10 @"longitude"\cf0 ],\cf10 @"userName"\cf0 :personModel.\cf5 nickName\cf0 ,\cf10 @"userPhoto"\cf0 :personModel.\cf5 imgUrl\cf7 \}\cf0 ;\
+            \}\cf2 else\cf0 \{\
+             message.\cf5 ext\cf0 =\cf7 @\{\cf10 @"sendTime"\cf0 :time,\cf10 @"latitude"\cf0 :[locationDict \cf4 objectForKey\cf0 :\cf10 @"latitude"\cf0 ],\cf10 @"longitude"\cf0 :[locationDict \cf4 objectForKey\cf0 :\cf10 @"longitude"\cf0 ]\cf7 \}\cf0 ;\
+            \
+\
+            \}\
+           \
+            message.\cf5 messageType\cf0  = \cf8 eConversationTypeGroupChat\cf0 ; \cf9 // 
+\f1 \'c9\'e8\'d6\'c3\'ce\'aa\'b5\'a5\'c1\'c4\'cf\'fb\'cf\'a2
+\f0 \cf0 \
+            \cf9 //message.messageType = eConversationTypeGroupChat;// 
+\f1 \'c9\'e8\'d6\'c3\'ce\'aa\'c8\'ba\'c1\'c4\'cf\'fb\'cf\'a2
+\f0 \cf0 \
+            \cf9 //message.messageType = eConversationTypeChatRoom;// 
+\f1 \'c9\'e8\'d6\'c3\'ce\'aa\'c1\'c4\'cc\'ec\'ca\'d2\'cf\'fb\'cf\'a2
+\f0 \cf0 \
+            \cf9 // [weakSelf sendAudioMessage:voice];\cf0 \
+            [[\cf5 EaseMob\cf0  \cf8 sharedInstance\cf0 ].\cf5 chatManager\cf0 \
+             \cf8 asyncSendMessage\cf0 :(\cf5 EMMessage\cf0  *)message\
+             \cf8 progress\cf0 :\cf2 nil\cf0 ];\
+            \cf9 //            [[EaseMob sharedInstance].chatManager asyncSendMessage:(EMMessage *)message\cf0 \
+            \cf9 //                                                          progress:nil\cf0 \
+            \cf9 //                                                           prepare:nil\cf0 \
+            \cf9 //                                                           onQueue:nil\cf0 \
+            \cf9 //                                                        completion:nil\cf0 \
+            \cf9 //                                                           onQueue:nil];\cf0 \
+            \
+            \cf9 //
+\f1 \'bc\'c7\'c2\'bc\'d7\'d4\'bc\'ba\'b5\'c4\'cf\'fb\'cf\'a2
+\f0 \cf0 \
+            \cf3 NSString\cf0  * timeStampString = [\cf3 NSString\cf0  \cf4 stringWithFormat\cf0 :\cf10 @"%lld"\cf0 ,message.\cf5 timestamp\cf0 ];\
+            \cf3 NSTimeInterval\cf0  _interval=[[timeStampString \cf4 substringToIndex\cf0 :\cf7 10\cf0 ] \cf4 doubleValue\cf0  ];\
+            \cf3 NSDate\cf0  *date = [\cf3 NSDate\cf0  \cf4 dateWithTimeIntervalSince1970\cf0 :_interval];\
+            \cf4 NSLog\cf0 (\cf10 @"date2 %@"\cf0 , date);\
+            \
+            \cf3 NSDateFormatter\cf0  * df = [[\cf3 NSDateFormatter\cf0  \cf4 alloc\cf0 ] \cf4 init\cf0 ];\
+            [df \cf4 setDateFormat\cf0 :\cf10 @"HH:mm"\cf0 ];\
+            \cf3 NSString\cf0  * dateString = [df \cf4 stringFromDate\cf0 :date];\
+            [\cf5 _messageDict\cf0  \cf4 setValue\cf0 :\cf10 @"me"\cf0  \cf4 forKey\cf0 :\cf10 @"name"\cf0 ];\
+            [\cf5 _messageDict\cf0  \cf4 setValue\cf0 :dateString \cf4 forKey\cf0 :\cf10 @"time"\cf0 ];\
+            \
+            [\cf5 _messageDict\cf0  \cf4 setValue\cf0 :\cf10 @"voice"\cf0  \cf4 forKey\cf0 :\cf10 @"type"\cf0 ];\
+            \
+            [\cf5 _messageDict\cf0  \cf4 setValue\cf0 :body.\cf5 localPath\cf0  \cf4 forKey\cf0 :\cf10 @"content"\cf0 ];\
+            [\cf5 _messageDict\cf0  \cf4 setValue\cf0 :[\cf3 NSString\cf0  \cf4 stringWithFormat\cf0 :\cf10 @"%ld"\cf0 ,(\cf2 long\cf0 )body.\cf5 duration\cf0 ] \cf4 forKey\cf0 :\cf10 @"audioLength"\cf0 ];\
+            \
+            \
+            \cf9 //
+\f1 \'cd\'b7\'cf\'f1
+\f0 \cf0 \
+            \
+             \cf5 personMessage\cf0  *personModel=[\cf3 NSKeyedUnarchiver\cf0  \cf4 unarchiveObjectWithFile\cf0 :\cf6 personMessagePath\cf0 ];\
+            \
+            [\cf5 _messageDict\cf0  \cf4 setValue\cf0 :personModel.\cf5 nickName\cf0  \cf4 forKey\cf0 :\cf10 @"userName"\cf0 ];\
+            [\cf5 _messageDict\cf0  \cf4 setValue\cf0 :personModel.\cf5 imgUrl\cf0  \cf4 forKey\cf0 :\cf10 @"userPhoto"\cf0 ];\
+            \
+           \
+                \cf2 if\cf0  (\cf5 _pointListArray\cf0 .\cf3 count\cf0 >\cf7 0\cf0 ) \{\
+                    \cf5 PointListModel\cf0  *pointModel=\cf5 _pointListArray\cf0 [index];\
+                    \cf4 NSLog\cf0 (\cf10 @"____boxX%@  Y%@"\cf0 ,pointModel.\cf5 map_X\cf0 ,pointModel.\cf5 map_Y\cf0 );\
+                    [\cf5 _messageDict\cf0  \cf4 setObject\cf0 :pointModel.\cf5 map_Y\cf0  \cf4 forKey\cf0 :\cf10 @"mapy"\cf0 ];\
+                    [\cf5 _messageDict\cf0  \cf4 setObject\cf0 :pointModel.\cf5 map_X\cf0  \cf4 forKey\cf0 :\cf10 @"mapx"\cf0 ];\
+                \}\
+                \
+                \cf9 // NSLog(@"%@",_messageDict);\cf0 \
+                \cf5 MessageModel\cf0  *messageModel=[[\cf5 MessageModel\cf0  \cf4 alloc\cf0 ]\cf8 initWithDict\cf0 :\cf5 _messageDict\cf0 ];\
+                \cf4 NSLog\cf0 (\cf10 @"----%@"\cf0 ,messageModel.\cf5 name\cf0 );\
+                \cf9 // [_usrMessageArray addObject:messageModel];\cf0 \
+                \
+                \
+                \cf3 NSMutableArray\cf0  *muarry = [\cf3 NSMutableArray\cf0  \cf4 arrayWithArray\cf0 :\cf5 _array\cf0 ];\
+                \cf9 //    NSMutableArray *useArray=[[NSMutableArray alloc]init];\cf0 \
+                \
+                \
+                \
+                \
+                \cf2 int\cf0  nowtotal= muarry.\cf3 count\cf0 ;\
+                \cf2 if\cf0  (nowtotal>\cf7 0\cf0 ) \{\
+                    \cf2 BOOL\cf0  isHas=\cf2 NO\cf0 ;\
+                    \cf2 for\cf0 (\cf2 int\cf0  j=\cf7 0\cf0 ;j<muarry.\cf3 count\cf0 ;j++)\
+                    \{\
+                        \cf3 NSMutableArray\cf0  *messageArray2=muarry[j];\
+                        \cf5 MessageModel\cf0  *messageModel2=messageArray2[\cf7 0\cf0 ];\
+\pard\tx529\pardeftab529\pardirnatural\partightenfactor0
+\cf9 //                        NSLog(@"1%@",messageModel.name);\cf0 \
+\cf9 //                        NSLog(@"2%@",messageModel2.name);\cf0 \
+                        \cf2 if\cf0  ([messageModel2.\cf5 name\cf0  \cf4 isEqualToString\cf0 :messageModel.\cf5 name\cf0 ]) \{\
+                            [messageArray2 \cf4 addObject\cf0 :messageModel];\
+                            [muarry \cf4 removeObjectAtIndex\cf0 :j];\
+                            [muarry \cf4 addObject\cf0 :messageArray2];\
+                            \cf9 //[muarry addObject:messageArray2];\cf0 \
+                            isHas=\cf2 YES\cf0 ;\
+                            \cf2 break\cf0 ;\
+                        \}\cf2 else\cf0 \
+                        \{\
+                            \cf9 //                        NSMutableArray *usrMessage=[[NSMutableArray alloc]init];\cf0 \
+                            \cf9 //                     [usrMessage addObject:messageModel];\cf0 \
+                            \cf9 //                        [muarry addObject:usrMessage];\cf0 \
+                            \cf9 //                        break;\cf0 \
+                        \}\
+                    \}\
+                    \cf2 if\cf0  (isHas==\cf2 NO\cf0 )\
+                    \{\
+                        \cf3 NSMutableArray\cf0  *usrMessage=[[\cf3 NSMutableArray\cf0  \cf4 alloc\cf0 ]\cf4 init\cf0 ];\
+                        [usrMessage \cf4 addObject\cf0 :messageModel];\
+                        [muarry \cf4 addObject\cf0 :usrMessage];\
+                    \}\
+                    \
+                \}\
+                \cf2 else\cf0 \
+                \{\
+                    \cf3 NSMutableArray\cf0  *usrMessage=[[\cf3 NSMutableArray\cf0  \cf4 alloc\cf0 ]\cf4 init\cf0 ];\
+                    [usrMessage \cf4 addObject\cf0 :messageModel];\
+                    [muarry \cf4 addObject\cf0 :usrMessage];\
+                \}\
+                \
+                \
+                \
+                \cf5 _array\cf0 =muarry;\
+                \
+                \
+                \cf5 _mapView\cf0 .\cf5 messageArray\cf0 =[\cf5 _array\cf0  \cf4 mutableCopy\cf0 ];\
+                \
+          \
+            \
+            \
+        \}\cf2 else\cf0  \{\
+            \cf9 //            [weakSelf showHudInView:self.view hint:NSLocalizedString(@"media.timeShort", @"The recording time is too short")];\cf0 \
+            \cf9 //            weakSelf.chatToolBar.recordButton.enabled = NO;\cf0 \
+            \cf9 //            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^\{\cf0 \
+            \cf9 //                [weakSelf hideHud];\cf0 \
+            \cf9 //                weakSelf.chatToolBar.recordButton.enabled = YES;\cf0 \
+            \cf9 //            \});\cf0 \
+        \}\
+        \
+        \
+        \
+    \}];\
+    \cf9 //NSLog(@"%f",[[EMCDDeviceManager sharedInstance] emPeekRecorderVoiceMeter]);\cf0 \
+    \
+    \}\
+\}\
+\
+\
+}
